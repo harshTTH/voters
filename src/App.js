@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import Grid from "@material-ui/core/Grid";
 import {withStyles} from "@material-ui/core/styles";
 import Header from "./Components/Header";
-import AdminForm from "./Components/AdminForm";
+import Routes from "./Routes";
 import "./App.css";
 
 const styles = theme => ({
@@ -20,7 +20,7 @@ class App extends Component {
 					<Header/>
 				</Grid>
 				<Grid item xs={6}>
-					<AdminForm/>
+					<Routes/>
 				</Grid>
 			</Grid>
 		</div>);
