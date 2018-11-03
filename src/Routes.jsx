@@ -7,7 +7,7 @@ const Routes = () => (
   <BrowserRouter>
     <Switch>
       <Route exact path = "/" component = {AdminForm}/>
-      <Route exact path = "/newPoll" component = {NewPoll}/>
+      <Route exact path = "/addNewPoll" component = {NewPoll}/>
     </Switch>
   </BrowserRouter>
 )
