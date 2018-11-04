@@ -71,12 +71,7 @@ class VotingForm extends Component {
     let array = [], inputs = []
     for (let i = 0; i < noOfCandidates; i++) {
       array.push(i);
-      // if (i%2 == 0){
-      //   inputs.push(<br/>);
-      // }
-    }
-    // console.log(array);
-    
+    }    
     inputs = array.map((number) =>     
       <Input placeholder={`Candidate ${number}`} type="text" inputProps={{
         "aria-label" : "Description"
@@ -88,22 +83,21 @@ class VotingForm extends Component {
   render() { 
     const {classes} = this.props;     
     return (
-      <Card style={{marginTop: 100}} raised>
+      <Card className={classes.root} raised>
         <CardHeader title="New Poll"/>
-        <form  autoComplete="off" onSubmit={this.handleSubmit}>
+        <form  autoComplete="off" className={classes.container} onSubmit={this.handleSubmit}>
           <CardContent>
-            <Input placeholder="Title of Poll" name="title" type="text" inputProps={{
+            <Input className={classes.input} placeholder="Title of Poll" name="title" type="text" inputProps={{
                 "aria-label" : "Description"
               }} onChange={this.handleChange} value={this.state.title} required/>
-            <br/>
-            <Input placeholder="No. of candidates" type="number" inputProps={{
+            <Input className={classes.input} placeholder="No. of candidates" type="number" inputProps={{
                 "aria-label" : "Description"
               }} name="noOfCandidate" onChange={this.handleChange} value={this.state.noOfCandidates}  required/>
             <br/>
             {this.makeCandidates(this.state.noOfCandidates)}
           </CardContent>
           <CardActions>
-            <Button variant="contained" color="primary" type="submit">
+            <Button className={classes.button} variant="contained" color="primary" type="submit">
               Submit
             </Button>
           </CardActions>
