@@ -68,36 +68,22 @@ class VotingForm extends Component {
   };
 
   makeCandidates = noOfCandidates => {
-    let array = [],
-      inputs = [];
+    let array = [], inputs = [];
+    const { classes } = this.props;
+    
     for (let i = 0; i < noOfCandidates; i++) {
       array.push(i);
     }
     inputs = array.map((number) =>
-      <Input placeholder={`Candidate ${number}`} type="text" inputProps={{
+      <Input className={classes.input} placeholder={`Candidate ${number}`} type="text" inputProps={{
         "aria-label" : "Description"
       }} name={`candidate ${number}`} onChange={this.handleChange} key={number} required/>
     );
     return inputs
   }
 
-    inputs = array.map(number => (
-      <Input
-		  placeholder={`Candidate ${number}`}
-		  type="text"
-		  inputProps={{
-			  "aria-label": "Description"
-		  }}
-		  name={`candidate ${number}`}
-		  onChange={this.handleChange}
-		  key={number}
-        required
-      />
-    ));
-    return inputs;
-  };
-
   render() {
+    const { classes } = this.props;
     return (
       <Card className={classes.root} raised>
         <CardHeader title="New Poll"/>
