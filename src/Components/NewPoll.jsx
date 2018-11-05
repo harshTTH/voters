@@ -75,7 +75,7 @@ class VotingForm extends Component {
       array.push(i);
     }
     inputs = array.map((number) =>
-      <Input className={classes.input} placeholder={`Candidate ${number}`} type="text" inputProps={{
+      <Input className={classes.input} placeholder={`Candidate ${number+1}`} type="text" inputProps={{
         "aria-label" : "Description"
       }} name={`candidate ${number}`} onChange={this.handleChange} key={number} required/>
     );
