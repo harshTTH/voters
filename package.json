@@ -28,5 +28,6 @@
   ],
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.1.0"
-  }
+  },
+  "proxy": "http://localhost/votingApi:8080"
 }
