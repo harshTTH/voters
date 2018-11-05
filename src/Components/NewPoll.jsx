@@ -72,11 +72,22 @@ class VotingForm extends Component {
       inputs = [];
     for (let i = 0; i < noOfCandidates; i++) {
       array.push(i);
+<<<<<<< HEAD
       // if (i%2 == 0){
       //   inputs.push(<br/>);
       // }
     }
     // console.log(array);
+=======
+    }    
+    inputs = array.map((number) =>     
+      <Input placeholder={`Candidate ${number}`} type="text" inputProps={{
+        "aria-label" : "Description"
+      }} name={`candidate ${number}`} onChange={this.handleChange} key={number} required/>
+    );
+    return inputs
+  }
+>>>>>>> b03238f4a7f0c513d958821cb59d687c859ca5eb
 
     inputs = array.map(number => (
       <Input
@@ -96,6 +107,7 @@ class VotingForm extends Component {
 
   render() {
     return (
+<<<<<<< HEAD
       <Card style={{ marginTop: 100 }} raised>
         <CardHeader title="New Poll" />
         <form autoComplete="off" onSubmit={this.handleSubmit}>
@@ -124,10 +136,23 @@ class VotingForm extends Component {
               required
             />
             <br />
+=======
+      <Card className={classes.root} raised>
+        <CardHeader title="New Poll"/>
+        <form  autoComplete="off" className={classes.container} onSubmit={this.handleSubmit}>
+          <CardContent>
+            <Input className={classes.input} placeholder="Title of Poll" name="title" type="text" inputProps={{
+                "aria-label" : "Description"
+              }} onChange={this.handleChange} value={this.state.title} required/>
+            <Input className={classes.input} placeholder="No. of candidates" type="number" inputProps={{
+                "aria-label" : "Description"
+              }} name="noOfCandidate" onChange={this.handleChange} value={this.state.noOfCandidates}  required/>
+            <br/>
+>>>>>>> b03238f4a7f0c513d958821cb59d687c859ca5eb
             {this.makeCandidates(this.state.noOfCandidates)}
           </CardContent>
           <CardActions>
-            <Button variant="contained" color="primary" type="submit">
+            <Button className={classes.button} variant="contained" color="primary" type="submit">
               Submit
             </Button>
           </CardActions>
