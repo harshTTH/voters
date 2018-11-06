@@ -9,9 +9,6 @@ import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 
 const styles = theme => ({
-  root: {
-    marginTop: 100
-  },
   card: {
     maxWidth: 300
   },
@@ -68,38 +65,75 @@ class VotingForm extends Component {
   };
 
   makeCandidates = noOfCandidates => {
-    let array = [], inputs = [];
+    let array = [],
+      inputs = [];
     const { classes } = this.props;
-    
+
     for (let i = 0; i < noOfCandidates; i++) {
       array.push(i);
     }
-    inputs = array.map((number) =>
-      <Input className={classes.input} placeholder={`Candidate ${number+1}`} type="text" inputProps={{
-        "aria-label" : "Description"
-      }} name={`candidate ${number}`} onChange={this.handleChange} key={number} required/>
-    );
-    return inputs
-  }
+    inputs = array.map(number => (
+      <Input
+        className={classes.input}
+        placeholder={`Candidate ${number + 1}`}
+        type="text"
+        inputProps={{
+          "aria-label": "Description"
+        }}
+        name={`candidate ${number}`}
+        onChange={this.handleChange}
+        key={number}
+        required
+      />
+    ));
+    return inputs;
+  };
 
   render() {
     const { classes } = this.props;
     return (
-      <Card className={classes.root} raised>
-        <CardHeader title="New Poll"/>
-        <form  autoComplete="off" className={classes.container} onSubmit={this.handleSubmit}>
+      <Card raised>
+        <CardHeader title="New Poll" />
+        <form
+          autoComplete="off"
+          className={classes.container}
+          onSubmit={this.handleSubmit}
+        >
           <CardContent>
-            <Input className={classes.input} placeholder="Title of Poll" name="title" type="text" inputProps={{
-                "aria-label" : "Description"
-              }} onChange={this.handleChange} value={this.state.title} required/>
-            <Input className={classes.input} placeholder="No. of candidates" type="number" inputProps={{
-                "aria-label" : "Description"
-              }} name="noOfCandidate" onChange={this.handleChange} value={this.state.noOfCandidates}  required/>
-            <br/>
+            <Input
+              className={classes.input}
+              placeholder="Title of Poll"
+              name="title"
+              type="text"
+              inputProps={{
+                "aria-label": "Description"
+              }}
+              onChange={this.handleChange}
+              value={this.state.title}
+              required
+            />
+            <Input
+              className={classes.input}
+              placeholder="No. of candidates"
+              type="number"
+              inputProps={{
+                "aria-label": "Description"
+              }}
+              name="noOfCandidate"
+              onChange={this.handleChange}
+              value={this.state.noOfCandidates}
+              required
+            />
+            <br />
             {this.makeCandidates(this.state.noOfCandidates)}
           </CardContent>
           <CardActions>
-            <Button className={classes.button} variant="contained" color="primary" type="submit">
+            <Button
+              className={classes.button}
+              variant="contained"
+              color="primary"
+              type="submit"
+            >
               Submit
             </Button>
           </CardActions>

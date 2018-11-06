@@ -7,11 +7,9 @@ import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import { loginRequest } from "../requests";
+import AdminPanel from "./AdminPanel";
 
 const styles = theme => ({
-  root: {
-    marginTop: 100
-  },
   card: {
     maxWidth: 300
   },
@@ -34,7 +32,8 @@ const styles = theme => ({
 class AdminForm extends Component {
   state = {
     email: "",
-    password: ""
+    password: "",
+    loggedIn: false
   };
 
   handleChange = event => {
@@ -51,57 +50,66 @@ class AdminForm extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    loginRequest(this.state.email, this.state.password);
+    loginRequest(this.state.email, this.state.password).then(res => {
+      if (res) {
+        this.props.handleLogin(true);
+        this.setState({
+          loggedIn: true
+        });
+      }
+    });
   };
 
   render() {
     const { classes } = this.props;
     return (
-      <Card className={classes.root} raised>
-        <CardHeader title="Admin Login" />
-        <form
-          className={classes.container}
-          autoComplete="off"
-          onSubmit={this.handleSubmit}
-        >
-          <CardContent>
-            <Input
-              placeholder="Email"
-              name="email"
-              type="email"
-              className={classes.input}
-              inputProps={{
-                "aria-label": "Description"
-              }}
-              onChange={this.handleChange}
-              value={this.state.email}
-              required
-            />
-            <Input
-              placeholder="Password"
-              type="password"
-              className={classes.input}
-              inputProps={{
-                "aria-label": "Description"
-              }}
-              name="password"
-              value={this.state.password}
-              onChange={this.handleChange}
-              required
-            />
-          </CardContent>
-          <CardActions>
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.button}
-              type="submit"
-            >
-              LogIn
-            </Button>
-          </CardActions>
-        </form>
-      </Card>
+      <div>
+        {this.state.loggedIn ? (
+          <AdminPanel />
+        ) : (
+          <Card raised>
+            <CardHeader title="Admin Login" />
+            <form className={classes.container} onSubmit={this.handleSubmit}>
+              <CardContent>
+                <Input
+                  placeholder="Email"
+                  name="email"
+                  type="email"
+                  className={classes.input}
+                  inputProps={{
+                    "aria-label": "Description"
+                  }}
+                  onChange={this.handleChange}
+                  value={this.state.email}
+                  required
+                />
+                <Input
+                  placeholder="Password"
+                  type="password"
+                  className={classes.input}
+                  inputProps={{
+                    "aria-label": "Description"
+                  }}
+                  name="password"
+                  value={this.state.password}
+                  onChange={this.handleChange}
+                  required
+                />
+              </CardContent>
+              <CardActions>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  type="submit"
+                >
+                  LogIn
+                </Button>
+              </CardActions>
+            </form>
+          </Card>
+        )}
+      </div>
     );
   }
 }
