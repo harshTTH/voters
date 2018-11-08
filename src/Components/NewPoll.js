@@ -26,12 +26,18 @@ const styles = theme => ({
   },
   button: {
     margin: theme.spacing.unit
+  },
+  file: {
+    paddingRight: 100,
+    paddingBottom: 5,
+    marginLeft: 10
   }
 });
 
 class VotingForm extends Component {
   state = {
     title: "",
+    date: "",
     noOfCandidates: "",
     candidates: [],
     voters: []
@@ -45,10 +51,10 @@ class VotingForm extends Component {
     } else if (event.target.name.match(/candidate/g)) {
       let txt = event.target.name;
       let index = txt.match(/\d/g);
-      index = index.join("");
       let candidates = [...this.state.candidates];
+      
+      index = index.join("");
       candidates[index] = { ...candidates[index], key: event.target.value };
-      // console.log(candidates);
       this.setState({
         candidates
       });
@@ -56,6 +62,12 @@ class VotingForm extends Component {
       this.setState({
         noOfCandidates: event.target.value
       });
+    }else if (event.target.name === "date") {    
+      if (event.target.value >= new Date().toISOString().substr(0,10)) {
+        this.setState({
+          date: event.target.value
+        });
+      }
     }
   };
 
@@ -91,8 +103,7 @@ class VotingForm extends Component {
   };
 
   makeCandidates = noOfCandidates => {
-    let array = [],
-      inputs = [];
+    let array = [], inputs = [];
     const { classes } = this.props;
 
     for (let i = 0; i < noOfCandidates; i++) {
@@ -150,13 +161,27 @@ class VotingForm extends Component {
               value={this.state.noOfCandidates}
               required
             />
+            <Input
+              className={classes.input}
+              placeholder="Date"
+              type="date"
+              inputProps={{
+                "aria-label": "Description"
+              }}
+              name="date"
+              onChange={this.handleChange}
+              value={this.state.date}
+              required
+            />            
             <br />
             <Input
               type="file"
+              className={classes.file}
               accept=".xls,.xlsx"
               onChange={this.parseExcel}
+              display= 'none'
               required
-            />
+            /> 
             <br />
             {this.makeCandidates(this.state.noOfCandidates)}
           </CardContent>
