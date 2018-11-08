@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-
+import XLSX from "xlsx";
 import { withStyles } from "@material-ui/core/styles";
 import Input from "@material-ui/core/Input";
 import Button from "@material-ui/core/Button";
@@ -7,6 +7,7 @@ import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
+import { addPollRequest } from "../requests";
 
 const styles = theme => ({
   card: {
@@ -32,7 +33,8 @@ class VotingForm extends Component {
   state = {
     title: "",
     noOfCandidates: "",
-    candidates: []
+    candidates: [],
+    voters: []
   };
 
   handleChange = event => {
@@ -59,9 +61,33 @@ class VotingForm extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    console.log(this.state.candidates);
+    addPollRequest({
+      title: this.state.title,
+      candidates: this.state.candidates,
+      voters: this.state.voters
+    });
+  };
 
-    console.log("FUCK Happened");
+  parseExcel = event => {
+    event.persist();
+    var files = event.target.files,
+      f = files[0];
+    if (f) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var data = e.target.result;
+        data = new Uint8Array(data);
+        var workbook = XLSX.read(data, { type: "array" });
+        const parsedData = createVotersData(workbook.Sheets.Sheet1);
+        if (parsedData) {
+          this.setState({ voters: parsedData });
+        } else {
+          event.target.value = "";
+          alert("Invalid File");
+        }
+      }.bind(this);
+      reader.readAsArrayBuffer(f);
+    }
   };
 
   makeCandidates = noOfCandidates => {
@@ -125,6 +151,13 @@ class VotingForm extends Component {
               required
             />
             <br />
+            <Input
+              type="file"
+              accept=".xls,.xlsx"
+              onChange={this.parseExcel}
+              required
+            />
+            <br />
             {this.makeCandidates(this.state.noOfCandidates)}
           </CardContent>
           <CardActions>
@@ -142,5 +175,26 @@ class VotingForm extends Component {
     );
   }
 }
+
+const createVotersData = data => {
+  let voters = [];
+  let keys = Object.keys(data);
+  if (keys.length % 2 === 0) return null;
+  for (let i = 0; i < keys.length - 1; i += 2) {
+    let matchedName = data[keys[i]].w.match(/[a-zA-Z ]+/g);
+    let matchedMobile = data[keys[i + 1]].w.match(/[0-9]/g);
+    if (
+      matchedName &&
+      matchedName.length === 1 &&
+      matchedMobile &&
+      matchedMobile.length === 10
+    ) {
+      voters.push([matchedName[0], matchedMobile.join("")]);
+    } else {
+      return null;
+    }
+  }
+  return voters;
+};
 
 export default withStyles(styles)(VotingForm);
