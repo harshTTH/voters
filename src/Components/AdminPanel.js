@@ -10,6 +10,10 @@ const styles = theme => ({
 });
 
 class AdminPanel extends React.Component {
+  constructor() {
+    super();
+    //check for session
+  }
   render() {
     return <div>Admin Panel</div>;
   }

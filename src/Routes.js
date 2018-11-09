@@ -2,6 +2,7 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 import AdminForm from "./Components/AdminForm";
 import NewPoll from "./Components/NewPoll";
+import AdminPanel from "./Components/AdminPanel";
 
 const Routes = props => (
   <Switch>
@@ -12,7 +13,8 @@ const Routes = props => (
         <AdminForm {...innerProps} handleLogin={props.handleLogin} />
       )}
     />
-    <Route path="/addNewPoll" component={NewPoll} />
+    <Route path="/adminPanel/addNewPoll" component={NewPoll} />
+    <Route path="/adminPanel" component={AdminPanel} />
   </Switch>
 );
 
