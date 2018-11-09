@@ -92,7 +92,7 @@ class Header extends React.Component {
             )}
           </Toolbar>
         </AppBar>
-        {this.state.newPoll && <Redirect to="/addNewPoll" />}
+        {this.state.newPoll && <Redirect to="/adminPanel/addNewPoll" />}
       </div>
     );
   }

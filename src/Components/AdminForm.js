@@ -14,6 +14,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import IconButton from "@material-ui/core/IconButton";
 import { loginRequest } from "../requests";
 import AdminPanel from "./AdminPanel";
+import { Redirect } from "react-router";
 
 const styles = theme => ({
   card: {
@@ -92,7 +93,7 @@ class AdminForm extends Component {
     return (
       <div>
         {this.state.loggedIn ? (
-          <AdminPanel />
+          <Redirect to="/adminPanel" />
         ) : (
           <div>
             <Snackbar
