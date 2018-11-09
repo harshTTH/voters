@@ -2,10 +2,16 @@ import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Input from "@material-ui/core/Input";
 import Button from "@material-ui/core/Button";
+import classNames from "classnames";
 import Card from "@material-ui/core/Card";
+import ErrorIcon from "@material-ui/icons/Error";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
+import Snackbar from "@material-ui/core/Snackbar";
+import SnackbarContent from "@material-ui/core/SnackbarContent";
+import CloseIcon from "@material-ui/icons/Close";
+import IconButton from "@material-ui/core/IconButton";
 import { loginRequest } from "../requests";
 import AdminPanel from "./AdminPanel";
 
@@ -26,6 +32,20 @@ const styles = theme => ({
   },
   button: {
     margin: theme.spacing.unit
+  },
+  error: {
+    backgroundColor: theme.palette.error.dark
+  },
+  message: {
+    display: "flex",
+    alignItems: "center"
+  },
+  icon: {
+    fontSize: 20
+  },
+  iconVariant: {
+    opacity: 0.9,
+    marginRight: theme.spacing.unit
   }
 });
 
@@ -33,7 +53,8 @@ class AdminForm extends Component {
   state = {
     email: "",
     password: "",
-    loggedIn: false
+    loggedIn: false,
+    open: false
   };
 
   handleChange = event => {
@@ -54,7 +75,13 @@ class AdminForm extends Component {
       if (res) {
         this.props.handleLogin(true);
         this.setState({
-          loggedIn: true
+          loggedIn: true,
+          error: false
+        });
+      } else {
+        this.setState({
+          loggedIn: false,
+          open: true
         });
       }
     });
@@ -67,47 +94,82 @@ class AdminForm extends Component {
         {this.state.loggedIn ? (
           <AdminPanel />
         ) : (
-          <Card raised>
-            <CardHeader title="Admin Login" />
-            <form className={classes.container} onSubmit={this.handleSubmit}>
-              <CardContent>
-                <Input
-                  placeholder="Email"
-                  name="email"
-                  type="email"
-                  className={classes.input}
-                  inputProps={{
-                    "aria-label": "Description"
-                  }}
-                  onChange={this.handleChange}
-                  value={this.state.email}
-                  required
-                />
-                <Input
-                  placeholder="Password"
-                  type="password"
-                  className={classes.input}
-                  inputProps={{
-                    "aria-label": "Description"
-                  }}
-                  name="password"
-                  value={this.state.password}
-                  onChange={this.handleChange}
-                  required
-                />
-              </CardContent>
-              <CardActions>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  className={classes.button}
-                  type="submit"
-                >
-                  LogIn
-                </Button>
-              </CardActions>
-            </form>
-          </Card>
+          <div>
+            <Snackbar
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center"
+              }}
+              open={this.state.open}
+              autoHideDuration={6000}
+              onClose={() => this.setState({ open: false })}
+            >
+              <SnackbarContent
+                className={classes.error}
+                aria-describedby="client-snackbar"
+                message={
+                  <span id="client-snackbar" className={classes.message}>
+                    <ErrorIcon
+                      className={classNames(classes.icon, classes.iconVariant)}
+                    />
+                    Incorrect Details
+                  </span>
+                }
+                action={[
+                  <IconButton
+                    key="close"
+                    aria-label="Close"
+                    color="inherit"
+                    className={classes.close}
+                    onClick={() => this.setState({ open: false })}
+                  >
+                    <CloseIcon className={classes.icon} />
+                  </IconButton>
+                ]}
+              />
+            </Snackbar>
+            <Card raised>
+              <CardHeader title="Admin Login" />
+              <form className={classes.container} onSubmit={this.handleSubmit}>
+                <CardContent>
+                  <Input
+                    placeholder="Email"
+                    name="email"
+                    type="email"
+                    className={classes.input}
+                    inputProps={{
+                      "aria-label": "Description"
+                    }}
+                    onChange={this.handleChange}
+                    value={this.state.email}
+                    required
+                  />
+                  <Input
+                    placeholder="Password"
+                    type="password"
+                    className={classes.input}
+                    inputProps={{
+                      "aria-label": "Description"
+                    }}
+                    name="password"
+                    value={this.state.password}
+                    onChange={this.handleChange}
+                    required
+                  />
+                </CardContent>
+                <CardActions>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    className={classes.button}
+                    type="submit"
+                  >
+                    LogIn
+                  </Button>
+                </CardActions>
+              </form>
+            </Card>
+          </div>
         )}
       </div>
     );

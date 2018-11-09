@@ -6,7 +6,7 @@ const loginRequest = (email, password) =>
       email,
       password
     })
-    .then(response => true)
+    .then(response => response.data)
     .catch(error => {});
 
 const addPollRequest = data =>
