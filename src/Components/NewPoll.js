@@ -54,7 +54,7 @@ class VotingForm extends Component {
       let candidates = [...this.state.candidates];
       
       index = index.join("");
-      candidates[index] = { ...candidates[index], key: event.target.value };
+      candidates[index] = event.target.value;
       this.setState({
         candidates
       });
@@ -72,7 +72,7 @@ class VotingForm extends Component {
   };
 
   handleSubmit = event => {
-    event.preventDefault();
+    event.preventDefault();   
     addPollRequest({
       title: this.state.title,
       candidates: this.state.candidates,
