@@ -5,6 +5,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Header from "./Components/Header";
 import Routes from "./Routes";
 import "./App.css";
+import { getSession } from "./utils";
 
 const styles = theme => ({
   root: {
@@ -17,7 +18,7 @@ const styles = theme => ({
 
 class App extends Component {
   state = {
-    loggedIn: false
+    loggedIn: getSession()
   };
 
   handleLogin = login => {

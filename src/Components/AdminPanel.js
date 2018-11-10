@@ -1,5 +1,7 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
+import { Redirect } from "react-router";
+import { getSession } from "../utils";
 
 const styles = theme => ({
   root: {
@@ -11,7 +13,9 @@ const styles = theme => ({
 
 class AdminPanel extends React.Component {
   render() {
-    return <div>Admin Panel</div>;
+    return (
+      <div>{getSession() ? <div>Admin Panel</div> : <Redirect to="/" />}</div>
+    );
   }
 }
 

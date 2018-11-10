@@ -10,12 +10,12 @@ const loginRequest = (email, password) =>
     .catch(error => {});
 
 const addPollRequest = data =>
-  axios.post("/addNewPoll", data).then(response => {
+  axios.post("/adminPanel/addNewPoll", data).then(response => {
     console.log(response.data);
   });
 
 const fetchPolls = () =>
-  axios.get("/fetchPolls").then(response => {
+  axios.post("/fetchPolls").then(response => {
     console.log(response.data);
   });
 

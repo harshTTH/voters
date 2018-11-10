@@ -10,6 +10,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import { Redirect } from "react-router";
 import { Link } from "react-router-dom";
+import { getSession, logout } from "../utils";
 
 const styles = {
   root: {
@@ -38,6 +39,7 @@ class Header extends React.Component {
       case 2:
         break;
       case 3:
+        logout();
         break;
     }
   };

@@ -15,6 +15,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { loginRequest } from "../requests";
 import AdminPanel from "./AdminPanel";
 import { Redirect } from "react-router";
+import { getSession } from "../utils";
 
 const styles = theme => ({
   card: {
@@ -54,7 +55,7 @@ class AdminForm extends Component {
   state = {
     email: "",
     password: "",
-    loggedIn: false,
+    loggedIn: getSession(),
     open: false
   };
 

@@ -44,7 +44,8 @@ class SelectPoll extends React.Component {
     };
   }
 
-  componetDidMount() {
+  componentDidMount() {
+    console.log("fecthing polls");
     fetchPolls().then(response => this.setState({ list: response }));
   }
 

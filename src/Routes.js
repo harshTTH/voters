@@ -14,9 +14,9 @@ const Routes = props => (
         <AdminForm {...innerProps} handleLogin={props.handleLogin} />
       )}
     />
-    <Route path="/adminPanel/addNewPoll" component={NewPoll} />
-    <Route path="/adminPanel" component={AdminPanel} />
-    <Route path="/voter" component={SelectPoll} />
+    <Route exact path="/adminPanel/addNewPoll" component={NewPoll} />
+    <Route exact path="/adminPanel" component={AdminPanel} />
+    <Route exact path="/voter" component={SelectPoll} />
   </Switch>
 );
 
