@@ -46,7 +46,7 @@ class SelectPoll extends React.Component {
 
   componentDidMount() {
     console.log("fecthing polls");
-    fetchPolls().then(response => this.setState({ list: response }));
+    fetchPolls().then(response => this.setState({ list: response.all }));
   }
 
   handleChange = event => {
@@ -91,7 +91,7 @@ class SelectPoll extends React.Component {
                 </MenuItem>
                 {this.state.list &&
                   this.state.list.map(poll => (
-                    <MenuItem value={poll.pollId}>{poll.title}</MenuItem>
+                    <MenuItem value={poll.id_no}>{poll.title}</MenuItem>
                   ))}
               </Select>
             </FormControl>
