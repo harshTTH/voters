@@ -228,8 +228,23 @@ class VotingForm extends Component {
 const createVotersData = data => {
   let voters = [];
   let keys = Object.keys(data);
-  if (keys.length % 2 === 0) return null;
-  for (let i = 0; i < keys.length - 1; i += 2) {
+  let boundary = data["!ref"].split(":");
+
+  let start = 0;
+  let end = keys.length - 1;
+  while (start < keys.length) {
+    if (keys[start] === boundary[0]) {
+      break;
+    } else start++;
+  }
+
+  while (end >= 0) {
+    if (keys[end] === boundary[1]) {
+      break;
+    } else end--;
+  }
+
+  for (let i = start; i <= end; i += 2) {
     let matchedName = data[keys[i]].w.match(/[a-zA-Z ]+/g);
     let matchedMobile = data[keys[i + 1]].w.match(/[0-9]/g);
     if (
@@ -243,6 +258,8 @@ const createVotersData = data => {
       return null;
     }
   }
+
+  console.log(voters);
   return voters;
 };
 
