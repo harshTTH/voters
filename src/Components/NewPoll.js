@@ -3,10 +3,13 @@ import XLSX from "xlsx";
 import { withStyles } from "@material-ui/core/styles";
 import Input from "@material-ui/core/Input";
 import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardActions,
+  CircularProgress
+} from "@material-ui/core";
 import { addPollRequest } from "../requests";
 import { getSession } from "../utils";
 import { Redirect } from "react-router";
@@ -43,7 +46,8 @@ class VotingForm extends Component {
     noOfCandidates: "",
     candidates: [],
     voters: [],
-    next: false
+    next: false,
+    onProcess: false
   };
 
   handleChange = event => {
@@ -76,13 +80,14 @@ class VotingForm extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
+    this.setState({ onProcess: true });
     addPollRequest({
       title: this.state.title,
       candidates: this.state.candidates,
       voters: this.state.voters,
       date: this.state.date
     }).then(response => {
-      this.setState({ next: response });
+      this.setState({ next: response.all });
     });
   };
 
@@ -138,85 +143,85 @@ class VotingForm extends Component {
     return (
       <div>
         {getSession() ? (
-          <div>
-            {this.state.next ? (
-              <Redirect
-                to={{
-                  pathname: "/adminPanel",
-                  state: { parentData: this.state.next }
-                }}
-              />
-            ) : (
-              <Card raised>
-                <CardHeader title="New Poll" />
-                <form
-                  autoComplete="off"
-                  className={classes.container}
-                  onSubmit={this.handleSubmit}
-                >
-                  <CardContent>
-                    <Input
-                      className={classes.input}
-                      placeholder="Title of Poll"
-                      name="title"
-                      type="text"
-                      inputProps={{
-                        "aria-label": "Description"
-                      }}
-                      onChange={this.handleChange}
-                      value={this.state.title}
-                      required
-                    />
-                    <Input
-                      className={classes.input}
-                      placeholder="No. of candidates"
-                      type="number"
-                      inputProps={{
-                        "aria-label": "Description"
-                      }}
-                      name="noOfCandidate"
-                      onChange={this.handleChange}
-                      value={this.state.noOfCandidates}
-                      required
-                    />
-                    <Input
-                      className={classes.input}
-                      placeholder="Date"
-                      type="date"
-                      inputProps={{
-                        "aria-label": "Description"
-                      }}
-                      name="date"
-                      onChange={this.handleChange}
-                      value={this.state.date}
-                      required
-                    />
-                    <br />
-                    <Input
-                      type="file"
-                      className={classes.file}
-                      accept=".xls,.xlsx"
-                      onChange={this.parseExcel}
-                      display="none"
-                      required
-                    />
-                    <br />
-                    {this.makeCandidates(this.state.noOfCandidates)}
-                  </CardContent>
-                  <CardActions>
-                    <Button
-                      className={classes.button}
-                      variant="contained"
-                      color="primary"
-                      type="submit"
-                    >
-                      Submit
-                    </Button>
-                  </CardActions>
-                </form>
-              </Card>
-            )}
-          </div>
+          this.state.next ? (
+            <Redirect
+              to={{
+                pathname: "/adminPanel",
+                state: { parentData: this.state.next }
+              }}
+            />
+          ) : this.state.onProcess ? (
+            <CircularProgress className={classes.progress} />
+          ) : (
+            <Card raised>
+              <CardHeader title="New Poll" />
+              <form
+                autoComplete="off"
+                className={classes.container}
+                onSubmit={this.handleSubmit}
+              >
+                <CardContent>
+                  <Input
+                    className={classes.input}
+                    placeholder="Title of Poll"
+                    name="title"
+                    type="text"
+                    inputProps={{
+                      "aria-label": "Description"
+                    }}
+                    onChange={this.handleChange}
+                    value={this.state.title}
+                    required
+                  />
+                  <Input
+                    className={classes.input}
+                    placeholder="No. of candidates"
+                    type="number"
+                    inputProps={{
+                      "aria-label": "Description"
+                    }}
+                    name="noOfCandidate"
+                    onChange={this.handleChange}
+                    value={this.state.noOfCandidates}
+                    required
+                  />
+                  <Input
+                    className={classes.input}
+                    placeholder="Date"
+                    type="date"
+                    inputProps={{
+                      "aria-label": "Description"
+                    }}
+                    name="date"
+                    onChange={this.handleChange}
+                    value={this.state.date}
+                    required
+                  />
+                  <br />
+                  <Input
+                    type="file"
+                    className={classes.file}
+                    accept=".xls,.xlsx"
+                    onChange={this.parseExcel}
+                    display="none"
+                    required
+                  />
+                  <br />
+                  {this.makeCandidates(this.state.noOfCandidates)}
+                </CardContent>
+                <CardActions>
+                  <Button
+                    className={classes.button}
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                  >
+                    Submit
+                  </Button>
+                </CardActions>
+              </form>
+            </Card>
+          )
         ) : (
           <Redirect to="/" />
         )}

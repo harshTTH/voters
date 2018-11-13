@@ -2,14 +2,24 @@ import React from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import Typography from '@material-ui/core/Typography';
+import Typography from "@material-ui/core/Typography";
 import { Redirect } from "react-router";
 import { getSession } from "../utils";
-import { fetchPolls } from "../requests";
-import { Card, CardContent } from "@material-ui/core";
-
+import { addPollRequest } from "../requests";
+import {
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Divider,
+  CircularProgress
+} from "@material-ui/core";
 
 const styles = theme => ({
+  card: {
+    minWidth: 275,
+    minHeight: 150
+  },
   root: {
     ...theme.mixins.gutters(),
     paddingTop: theme.spacing.unit * 2,
@@ -18,10 +28,9 @@ const styles = theme => ({
   gridRoot: {
     flexGrow: 1
   },
-  paper: {
-    height: 140,
-    width: 100
-  },
+  progress: {
+    margin: theme.spacing.unit * 2
+  }
 });
 
 class AdminPanel extends React.Component {
@@ -31,59 +40,84 @@ class AdminPanel extends React.Component {
     if (this.props.location.state && this.props.location.state.parentData)
       polls = this.props.location.state.parentData;
     this.state = {
-      polls
+      polls: polls
     };
   }
 
   componentDidMount() {
-    if (!this.state.polls) {
-      fetchPolls().then(response => this.setState({ polls: response.all }));
+    if (!this.state.polls && getSession()) {
+      addPollRequest().then(response => {
+        this.setState({ polls: response.all });
+      });
     }
   }
 
   renderPolls = () => {
     let { classes } = this.props;
     let currentDate = new Date().toISOString().substr(0, 10);
-
-    console.log(this.state.polls.all);
+    let expired, disabled;
     return (
       <Grid container className={classes.root} spacing={16}>
         <Grid item xs={12}>
-          <Grid container justify="center" spacing={Number(16)}>  
-            {
-              this.state.polls.all
-              .sort((x, y) => x.poll_date > y.poll_date)
-              .map(poll => (
-                poll.poll_date > currentDate ? (
-                  <Grid key={poll.id_no} item>            
-                    <Paper className={classes.paper} align='center'>
-                      <Typography paragraph variant='h6'>
-                        {poll.title}
-                      </Typography>
-                    </Paper>
-                  </Grid> 
-                ) : (
-                  <Grid key={poll.id_no} item>            
-                    <Paper className={classes.paper} align='center' style={{backgroundColor: "#ff5a44"}}>
-                      <Typography paragraph variant='h6' style={{color: 'white'}}>
-                        Poll Expired
-                      </Typography>
-                    </Paper>
-                  </Grid> 
-                )
-              ))
-            }              
+          <Grid container justify="center" spacing={Number(16)}>
+            {this.state.polls
+              .sort((x, y) => x.poll_date[0] < y.poll_date[0])
+              .map(poll => {
+                if (poll.poll_date[0] >= currentDate) {
+                  expired = { backgroundColor: "#FAFAFA" };
+                  disabled = false;
+                } else {
+                  expired = {
+                    backgroundColor: "#BDBDBD"
+                  };
+                  disabled = true;
+                }
+                return (
+                  <Grid key={poll.id_no[0]} item>
+                    <Card
+                      className={classes.card}
+                      align="center"
+                      style={expired}
+                      raised={!disabled}
+                    >
+                      <CardContent>
+                        <Typography variant="h5" component="h2">
+                          {poll.title[0]}
+                        </Typography>
+                        <Divider />
+                        <Typography component="p">
+                          Poll Date :-
+                          {poll.poll_date[0]}
+                          <br />
+                          {disabled ? "(Poll Expired)" : ""}
+                        </Typography>
+                      </CardContent>
+                      <CardActions>
+                        <Button size="small" disabled={disabled}>
+                          Learn More
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                );
+              })}
           </Grid>
         </Grid>
       </Grid>
     );
-  }
+  };
 
   render() {
+    let { classes } = this.props;
     return (
-      <div>{getSession() ? <div>Admin Panel</div> : <Redirect to="/" />}
-      <br/>
-      {this.state.polls ? this.renderPolls() : ""}
+      <div>
+        {this.state.polls && getSession() ? (
+          this.renderPolls()
+        ) : getSession() ? (
+          <CircularProgress className={classes.progress} />
+        ) : (
+          <Redirect to="/" />
+        )}
       </div>
     );
   }
