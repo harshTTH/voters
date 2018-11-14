@@ -10,14 +10,23 @@ import {
   Select,
   InputLabel,
   MenuItem,
-  Input
+  Input,
+  CircularProgress
 } from "@material-ui/core";
-import { fetchPolls, fetchPollData } from "../requests";
+import {
+  fetchPolls,
+  fetchPollData,
+  verifyVoter,
+  createOtpRequest
+} from "../requests";
 import { logout } from "../utils";
 
 const styles = theme => ({
   card: {
     minWidth: 375
+  },
+  progress: {
+    margin: theme.spacing.unit * 2
   },
   select: {
     minWidth: 200
@@ -31,9 +40,14 @@ const styles = theme => ({
   pos: {
     marginBottom: 12
   },
+  wrapper: {
+    margin: theme.spacing.unit,
+    position: "relative"
+  },
   formControl: {
     margin: theme.spacing.unit,
-    minWidth: 120
+    minWidth: 120,
+    display: "inline"
   }
 });
 
@@ -58,9 +72,21 @@ class SelectPoll extends React.Component {
   };
 
   handleSubmit = event => {
-    fetchPollData({
+    event.prevetDefault();
+    verifyVoter({
       poll: this.state.poll,
       mobile: this.state.mobile
+    }).then(res => {
+      if (res)
+        createOtpRequest({ mobile: this.state.mobile }).then(res => {
+          if (res)
+            fetchPollData({
+              poll: this.state.poll,
+              mobile: this.state.mobile
+            }).then(res => {
+              /*Create Vote Page*/
+            });
+        });
     });
   };
   render() {
@@ -77,27 +103,40 @@ class SelectPoll extends React.Component {
               Select Poll
             </Typography>
             <FormControl className={classes.formControl}>
-              <InputLabel htmlFor="age-simple">Poll</InputLabel>
-              <Select
-                name="poll"
-                value={this.state.poll}
-                onChange={this.handleChange}
-                inputProps={{
-                  name: "poll",
-                  id: "poll"
-                }}
-                className={classes.select}
-                variant="filled"
-                required
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                {this.state.list &&
-                  this.state.list.map(poll => (
-                    <MenuItem value={poll.id_no}>{poll.title}</MenuItem>
-                  ))}
-              </Select>
+              <InputLabel htmlFor="poll">Poll</InputLabel>
+              <div className={classes.wrapper}>
+                <Select
+                  name="poll"
+                  value={this.state.poll}
+                  onChange={this.handleChange}
+                  inputProps={{
+                    name: "poll",
+                    id: "poll"
+                  }}
+                  className={classes.select}
+                  variant="filled"
+                  required
+                  disabled={this.state.list.length === 0}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {this.state.list &&
+                    this.state.list.map(poll => (
+                      <MenuItem value={poll.id_no}>{poll.title}</MenuItem>
+                    ))}
+                </Select>
+                {this.state.list.length === 0 && (
+                  <div style={{ display: "inline" }}>
+                    <CircularProgress
+                      className={classes.progress}
+                      color="secondary"
+                      size={20}
+                    />
+                    Loading Polls
+                  </div>
+                )}
+              </div>
             </FormControl>
             <br />
             <Input
