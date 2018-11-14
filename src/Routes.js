@@ -4,6 +4,7 @@ import AdminForm from "./Components/AdminForm";
 import NewPoll from "./Components/NewPoll";
 import AdminPanel from "./Components/AdminPanel";
 import SelectPoll from "./Components/SelectPoll";
+import CastVote from "./Components/CastVote";
 
 const Routes = props => (
   <Switch>
@@ -17,6 +18,7 @@ const Routes = props => (
     <Route exact path="/adminPanel/addNewPoll" component={NewPoll} />
     <Route exact path="/adminPanel" component={AdminPanel} />
     <Route exact path="/voter" component={SelectPoll} />
+    <Route exact path="/castVote" component={CastVote} />
   </Switch>
 );
 

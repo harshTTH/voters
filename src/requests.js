@@ -18,4 +18,16 @@ const fetchPolls = () =>
 const fetchPollData = data => {
   axios.post("/pollData", data).then(response => {});
 };
-export { loginRequest, addPollRequest, fetchPolls, fetchPollData };
+
+//Temp Code
+const fetchCandidates = data => {
+  axios.post("/fetchCandates").then(response => response.data);
+};
+
+export {
+  loginRequest,
+  addPollRequest,
+  fetchPolls,
+  fetchPollData,
+  fetchCandidates
+};
