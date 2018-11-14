@@ -14,7 +14,9 @@ import {
   Divider,
   CircularProgress
 } from "@material-ui/core";
+import { initiateSocketConnection } from "../utils";
 
+let webSocket;
 const styles = theme => ({
   card: {
     minWidth: 275,
@@ -35,6 +37,7 @@ const styles = theme => ({
 
 class AdminPanel extends React.Component {
   constructor(props) {
+    webSocket = initiateSocketConnection();
     super(props);
     let polls;
     if (this.props.location.state && this.props.location.state.parentData)
@@ -50,6 +53,11 @@ class AdminPanel extends React.Component {
         this.setState({ polls: response.all });
       });
     }
+    webSocket.addEventListener("voteRequest", () => {
+      if (window.confirm("Allow Voter To Send OTP")) {
+        console.log("Sending OTP");
+      }
+    });
   }
 
   renderPolls = () => {

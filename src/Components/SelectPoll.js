@@ -1,16 +1,19 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import CardActions from "@material-ui/core/CardActions";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import Input from "@material-ui/core/Input";
+import {
+  Card,
+  CardContent,
+  Button,
+  Typography,
+  CardActions,
+  FormControl,
+  Select,
+  InputLabel,
+  MenuItem,
+  Input
+} from "@material-ui/core";
 import { fetchPolls, fetchPollData } from "../requests";
+import { logout } from "../utils";
 
 const styles = theme => ({
   card: {
@@ -37,6 +40,7 @@ const styles = theme => ({
 class SelectPoll extends React.Component {
   constructor(props) {
     super();
+    logout();
     this.state = {
       list: [],
       poll: "",

@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+let webSocket;
 
 const getSession = () => {
   const ss = Cookies.get("JSESSIONID");
@@ -14,4 +15,18 @@ const logout = () => {
     window.location.reload(true);
   }
 };
-export { getSession, logout };
+
+const initiateSocketConnection = () => {
+  // Create WebSocket connection.
+  if (webSocket) return webSocket;
+  const socket = new WebSocket("ws://localhost:8080");
+
+  // Connection opened
+  socket.addEventListener("open", function(event) {
+    console.log("Socket Connection Established");
+  });
+  webSocket = socket;
+  return socket;
+};
+
+export { getSession, logout, initiateSocketConnection };

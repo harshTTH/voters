@@ -18,4 +18,6 @@ const fetchPolls = () =>
 const fetchPollData = data => {
   axios.post("/pollData", data).then(response => {});
 };
+
+const createOtpRequest = data => {};
 export { loginRequest, addPollRequest, fetchPolls, fetchPollData };
