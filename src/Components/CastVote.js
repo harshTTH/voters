@@ -14,6 +14,12 @@ import {
 import Radio from "@material-ui/core/Radio";
 import green from "@material-ui/core/colors/green";
 import { fetchCandidates } from "../requests";
+import { Redirect } from "react-router";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 
 const styles = theme => ({
   card: {
@@ -52,7 +58,10 @@ class CastVote extends Component {
     this.state = {
       pollTitle: "New Poll",
       candidates: ["Candidate_1", "Candidate_2", "Candidate_3", "Candidate_4"],
-      vote: ""
+      vote: "",
+      submit: false,
+      open: true,
+      finalSubmit: false
     };
   }
 
@@ -73,59 +82,127 @@ class CastVote extends Component {
     console.log("VOTED :- " + this.state.vote);
     event.preventDefault();
     if (this.state.vote) {
-      fetchCandidates({
-        vote: this.state.vote,
-        pollTitle: this.state.pollTitle
-      });
+      this.setState({ submit: true, open: true });
     }
+  };
+
+  handleClose = event => {
+    event.preventDefault();
+    console.log(event);
+
+    if (event.target.value === "disagree") {
+      this.setState({ finalSubmit: false, vote: "", submit: false });
+      console.log("IN DISAGREE");
+    } else if (event.target.value === "agree") {
+      this.setState({ finalSubmit: true });
+      console.log("IN AGREE");
+      // fetchCandidates({
+      //   vote: this.state.vote,
+      //   pollTitle: this.state.pollTitle
+      // }).then(response => {
+      //   if (response) {
+      //     this.setState({ submit: true });
+      //   }
+      // });
+    }
+    this.setState({ open: false });
+  };
+
+  confirmVote = () => {
+    console.log("IN CONFRIM VOTE ...... " + this.state.submit);
+
+    return (
+      <Dialog
+        open={this.state.open}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Do you confirm your vote ?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            You confirm by clicking agree to vote "{this.state.vote}" .
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={this.handleClose}
+            value="disagree"
+            color="secondary"
+            autoFocus
+          >
+            Disagree
+          </Button>
+          <Button
+            onClick={this.handleClose}
+            value="agree"
+            color="primary"
+            autoFocus
+          >
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
   };
 
   render() {
     let { classes } = this.props;
+    console.log(this.state.submit);
+
     return (
-      <form onSubmit={this.handleSubmit}>
-        <Grid container className={classes.root} spacing={16}>
-          <Grid item xs={12}>
-            <Grid container justify="center" spacing={Number(16)}>
-              {this.state.candidates.map(candidate => (
-                <Grid key={candidate} item>
-                  <Card className={classes.card} align="center" raised>
-                    <CardContent>
-                      <Typography variant="h5" component="h2">
-                        {candidate}
-                      </Typography>
-                    </CardContent>
-                    <Divider />
-                    <Radio
-                      checked={this.state.vote === candidate}
-                      onChange={this.handleVoteChange}
-                      value={candidate}
-                      name="candidate"
-                      aria-label="A"
-                      classes={{
-                        root: classes.radio,
-                        checked: classes.checked
-                      }}
-                    />
-                    <CardContent />
-                  </Card>
+      <div>
+        {this.state.finalSubmit ? (
+          <Redirect to="/voter" />
+        ) : this.state.submit ? (
+          this.confirmVote()
+        ) : (
+          <form onSubmit={this.handleSubmit}>
+            <Grid container className={classes.root} spacing={16}>
+              <Grid item xs={12}>
+                <Grid container justify="center" spacing={Number(16)}>
+                  {this.state.candidates.map(candidate => (
+                    <Grid key={candidate} item>
+                      <Card className={classes.card} align="center" raised>
+                        <CardContent>
+                          <Typography variant="h5" component="h2">
+                            {candidate}
+                          </Typography>
+                        </CardContent>
+                        <Divider />
+                        <Radio
+                          checked={this.state.vote === candidate}
+                          onChange={this.handleVoteChange}
+                          value={candidate}
+                          name="candidate"
+                          aria-label="A"
+                          classes={{
+                            root: classes.radio,
+                            checked: classes.checked
+                          }}
+                        />
+                        <CardContent />
+                      </Card>
+                    </Grid>
+                  ))}
+                  <CardActions>
+                    <Button
+                      className={classes.button}
+                      variant="contained"
+                      color="primary"
+                      type="submit"
+                      size="large"
+                    >
+                      Cast Vote
+                    </Button>
+                  </CardActions>
                 </Grid>
-              ))}
-              <CardActions>
-                <Button
-                  className={classes.button}
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                  size="large"
-                >
-                  Cast Vote
-                </Button>
-              </CardActions>
+              </Grid>
             </Grid>
-          </Grid>
-        </Grid>
-      </form>
+          </form>
+        )}
+      </div>
     );
   }
 }
