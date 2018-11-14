@@ -38,7 +38,7 @@ const styles = theme => ({
     margin: `${theme.spacing.unit}px 0`
   },
   button: {
-    margin: theme.spacing.unit * 2
+    margin: theme.spacing.unit * 3
   }
 });
 
