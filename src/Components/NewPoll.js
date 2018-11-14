@@ -13,6 +13,7 @@ import {
 import { addPollRequest } from "../requests";
 import { getSession } from "../utils";
 import { Redirect } from "react-router";
+import ErrorSnack from "./ErrorSnack";
 
 const styles = theme => ({
   card: {
@@ -47,7 +48,9 @@ class VotingForm extends Component {
     candidates: [],
     voters: [],
     next: false,
-    onProcess: false
+    onProcess: false,
+    open: false,
+    message: ""
   };
 
   handleChange = event => {
@@ -78,17 +81,31 @@ class VotingForm extends Component {
     }
   };
 
+  onClose = () => this.setState({ open: false });
+
   handleSubmit = event => {
     event.preventDefault();
-    this.setState({ onProcess: true });
-    addPollRequest({
-      title: this.state.title,
-      candidates: this.state.candidates,
-      voters: this.state.voters,
-      date: this.state.date
-    }).then(response => {
-      this.setState({ next: response.all });
-    });
+    if (this.checkCandidates()) {
+      this.setState({ onProcess: true });
+      addPollRequest({
+        title: this.state.title,
+        candidates: this.state.candidates,
+        voters: this.state.voters,
+        date: this.state.date
+      }).then(response => {
+        this.setState({ next: response.all });
+      });
+    } else {
+      this.setState({ open: true, message: "Same Candidate Names!" });
+    }
+  };
+
+  checkCandidates = () => {
+    const candidates = this.state.candidates;
+    for (let i = 0; i < candidates.length; i++) {
+      if (candidates.indexOf(candidates[i]) !== i) return false;
+    }
+    return true;
   };
 
   parseExcel = event => {
@@ -106,7 +123,11 @@ class VotingForm extends Component {
           this.setState({ voters: parsedData });
         } else {
           event.target.value = "";
-          alert("Invalid File");
+          this.setState({
+            open: true,
+            message:
+              "Invalid File (Possible Duplicate Data or Unstructured file)"
+          });
         }
       }.bind(this);
       reader.readAsArrayBuffer(f);
@@ -153,74 +174,81 @@ class VotingForm extends Component {
           ) : this.state.onProcess ? (
             <CircularProgress className={classes.progress} />
           ) : (
-            <Card raised>
-              <CardHeader title="New Poll" />
-              <form
-                autoComplete="off"
-                className={classes.container}
-                onSubmit={this.handleSubmit}
-              >
-                <CardContent>
-                  <Input
-                    className={classes.input}
-                    placeholder="Title of Poll"
-                    name="title"
-                    type="text"
-                    inputProps={{
-                      "aria-label": "Description"
-                    }}
-                    onChange={this.handleChange}
-                    value={this.state.title}
-                    required
-                  />
-                  <Input
-                    className={classes.input}
-                    placeholder="No. of candidates"
-                    type="number"
-                    inputProps={{
-                      "aria-label": "Description"
-                    }}
-                    name="noOfCandidate"
-                    onChange={this.handleChange}
-                    value={this.state.noOfCandidates}
-                    required
-                  />
-                  <Input
-                    className={classes.input}
-                    placeholder="Date"
-                    type="date"
-                    inputProps={{
-                      "aria-label": "Description"
-                    }}
-                    name="date"
-                    onChange={this.handleChange}
-                    value={this.state.date}
-                    required
-                  />
-                  <br />
-                  <Input
-                    type="file"
-                    className={classes.file}
-                    accept=".xls,.xlsx"
-                    onChange={this.parseExcel}
-                    display="none"
-                    required
-                  />
-                  <br />
-                  {this.makeCandidates(this.state.noOfCandidates)}
-                </CardContent>
-                <CardActions>
-                  <Button
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                  >
-                    Submit
-                  </Button>
-                </CardActions>
-              </form>
-            </Card>
+            <div>
+              <ErrorSnack
+                open={this.state.open}
+                message={this.state.message}
+                onClose={this.onClose}
+              />
+              <Card raised>
+                <CardHeader title="New Poll" />
+                <form
+                  autoComplete="off"
+                  className={classes.container}
+                  onSubmit={this.handleSubmit}
+                >
+                  <CardContent>
+                    <Input
+                      className={classes.input}
+                      placeholder="Title of Poll"
+                      name="title"
+                      type="text"
+                      inputProps={{
+                        "aria-label": "Description"
+                      }}
+                      onChange={this.handleChange}
+                      value={this.state.title}
+                      required
+                    />
+                    <Input
+                      className={classes.input}
+                      placeholder="No. of candidates"
+                      type="number"
+                      inputProps={{
+                        "aria-label": "Description"
+                      }}
+                      name="noOfCandidate"
+                      onChange={this.handleChange}
+                      value={this.state.noOfCandidates}
+                      required
+                    />
+                    <Input
+                      className={classes.input}
+                      placeholder="Date"
+                      type="date"
+                      inputProps={{
+                        "aria-label": "Description"
+                      }}
+                      name="date"
+                      onChange={this.handleChange}
+                      value={this.state.date}
+                      required
+                    />
+                    <br />
+                    <Input
+                      type="file"
+                      className={classes.file}
+                      accept=".xls,.xlsx"
+                      onChange={this.parseExcel}
+                      display="none"
+                      required
+                    />
+                    <br />
+                    {this.makeCandidates(this.state.noOfCandidates)}
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      className={classes.button}
+                      variant="contained"
+                      color="primary"
+                      type="submit"
+                    >
+                      Submit
+                    </Button>
+                  </CardActions>
+                </form>
+              </Card>
+            </div>
           )
         ) : (
           <Redirect to="/" />
@@ -264,7 +292,13 @@ const createVotersData = data => {
     }
   }
 
-  console.log(voters);
+  var tempset = new Set();
+  for (let i = 0; i < voters.length; i++) {
+    tempset.add(voters[i][1]);
+  }
+  if (tempset.size !== voters.length) {
+    return null;
+  }
   return voters;
 };
 

@@ -1,21 +1,16 @@
 import React, { Component } from "react";
-import { withStyles } from "@material-ui/core/styles";
 import {
   Input,
   Button,
   Card,
   CardHeader,
   CardContent,
-  CardActions,
-  Snackbar,
-  SnackbarContent,
-  IconButton
+  CardActions
 } from "@material-ui/core";
-import classNames from "classnames";
-import ErrorIcon from "@material-ui/icons/Error";
-import CloseIcon from "@material-ui/icons/Close";
+import { withStyles } from "@material-ui/core/styles";
 import { loginRequest } from "../requests";
 import AdminPanel from "./AdminPanel";
+import ErrorSnack from "./ErrorSnack";
 import { Redirect } from "react-router";
 import { getSession } from "../utils";
 
@@ -36,20 +31,6 @@ const styles = theme => ({
   },
   button: {
     margin: theme.spacing.unit
-  },
-  error: {
-    backgroundColor: theme.palette.error.dark
-  },
-  message: {
-    display: "flex",
-    alignItems: "center"
-  },
-  icon: {
-    fontSize: 20
-  },
-  iconVariant: {
-    opacity: 0.9,
-    marginRight: theme.spacing.unit
   }
 });
 
@@ -73,6 +54,7 @@ class AdminForm extends Component {
     }
   };
 
+  onClose = () => this.setState({ open: false });
   handleSubmit = event => {
     event.preventDefault();
     loginRequest(this.state.email, this.state.password).then(res => {
@@ -80,7 +62,7 @@ class AdminForm extends Component {
         this.props.handleLogin(true);
         this.setState({
           loggedIn: true,
-          error: false
+          open: false
         });
       } else {
         this.setState({
@@ -99,39 +81,11 @@ class AdminForm extends Component {
           <Redirect to="/adminPanel" />
         ) : (
           <div>
-            <Snackbar
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "center"
-              }}
+            <ErrorSnack
               open={this.state.open}
-              autoHideDuration={6000}
-              onClose={() => this.setState({ open: false })}
-            >
-              <SnackbarContent
-                className={classes.error}
-                aria-describedby="client-snackbar"
-                message={
-                  <span id="client-snackbar" className={classes.message}>
-                    <ErrorIcon
-                      className={classNames(classes.icon, classes.iconVariant)}
-                    />
-                    Incorrect Details
-                  </span>
-                }
-                action={[
-                  <IconButton
-                    key="close"
-                    aria-label="Close"
-                    color="inherit"
-                    className={classes.close}
-                    onClick={() => this.setState({ open: false })}
-                  >
-                    <CloseIcon className={classes.icon} />
-                  </IconButton>
-                ]}
-              />
-            </Snackbar>
+              message="Incorrect Details"
+              onClose={this.onClose}
+            />
             <Card raised>
               <CardHeader title="Admin Login" />
               <form className={classes.container} onSubmit={this.handleSubmit}>

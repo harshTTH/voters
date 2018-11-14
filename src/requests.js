@@ -15,19 +15,18 @@ const addPollRequest = data =>
 const fetchPolls = () =>
   axios.get("/fetchPolls").then(response => response.data);
 
-const fetchPollData = data => {
+const fetchPollData = data =>
   axios.post("/pollData", data).then(response => {});
-};
 
-//Temp Code
-const fetchCandidates = data => {
-  axios.post("/fetchCandates").then(response => response.data);
-};
+const verifyVoter = data =>
+  axios.post("/verifyVoter", data).then(response => response.data);
 
+const createOtpRequest = data => {};
 export {
   loginRequest,
   addPollRequest,
   fetchPolls,
   fetchPollData,
-  fetchCandidates
+  verifyVoter,
+  createOtpRequest
 };
