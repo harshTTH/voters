@@ -12,10 +12,7 @@ import {
 } from "@material-ui/core";
 
 import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
+import green from "@material-ui/core/colors/green";
 import { fetchCandidates } from "../requests";
 
 const styles = theme => ({
@@ -38,8 +35,15 @@ const styles = theme => ({
     margin: `${theme.spacing.unit}px 0`
   },
   button: {
-    margin: theme.spacing.unit * 3
-  }
+    margin: theme.spacing.unit * 4
+  },
+  radio: {
+    color: green[600],
+    "&$checked": {
+      color: green[500]
+    }
+  },
+  checked: {}
 });
 
 class CastVote extends Component {
@@ -62,58 +66,66 @@ class CastVote extends Component {
 
   handleVoteChange = event => {
     this.setState({ vote: event.target.value });
-    console.log("Current Candidate :- " + this.state.vote);
+    console.log("Current Candidate :- " + event.target.value);
   };
 
   handleSubmit = event => {
     console.log("VOTED :- " + this.state.vote);
     event.preventDefault();
+    if (this.state.vote) {
+      fetchCandidates({
+        vote: this.state.vote,
+        pollTitle: this.state.pollTitle
+      });
+    }
   };
 
   render() {
     let { classes } = this.props;
     return (
-      <FormControl component="fieldset" className={classes.formControl}>
-        <RadioGroup
-          className={classes.group}
-          value={this.state.vote}
-          onChange={this.handleVoteChange}
-        >
-          <Grid container className={classes.root} spacing={16}>
-            <Grid item xs={12}>
-              <Grid container justify="center" spacing={Number(16)}>
-                {this.state.candidates.map(candidate => (
-                  <Grid key={candidate} item>
-                    <Card className={classes.card} align="center" raised>
-                      <CardContent>
-                        <Typography variant="h5" component="h2">
-                          {candidate}
-                        </Typography>
-                      </CardContent>
-                      <CardContent>
-                        <FormControlLabel
-                          value={candidate}
-                          control={<Radio />}
-                        />
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-                <CardActions>
-                  <Button
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                  >
-                    Cast Vote
-                  </Button>
-                </CardActions>
-              </Grid>
+      <form onSubmit={this.handleSubmit}>
+        <Grid container className={classes.root} spacing={16}>
+          <Grid item xs={12}>
+            <Grid container justify="center" spacing={Number(16)}>
+              {this.state.candidates.map(candidate => (
+                <Grid key={candidate} item>
+                  <Card className={classes.card} align="center" raised>
+                    <CardContent>
+                      <Typography variant="h5" component="h2">
+                        {candidate}
+                      </Typography>
+                    </CardContent>
+                    <Divider />
+                    <Radio
+                      checked={this.state.vote === candidate}
+                      onChange={this.handleVoteChange}
+                      value={candidate}
+                      name="candidate"
+                      aria-label="A"
+                      classes={{
+                        root: classes.radio,
+                        checked: classes.checked
+                      }}
+                    />
+                    <CardContent />
+                  </Card>
+                </Grid>
+              ))}
+              <CardActions>
+                <Button
+                  className={classes.button}
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  size="large"
+                >
+                  Cast Vote
+                </Button>
+              </CardActions>
             </Grid>
           </Grid>
-        </RadioGroup>
-      </FormControl>
+        </Grid>
+      </form>
     );
   }
 }

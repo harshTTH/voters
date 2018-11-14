@@ -22,11 +22,16 @@ const verifyVoter = data =>
   axios.post("/verifyVoter", data).then(response => response.data);
 
 const createOtpRequest = data => {};
+
+const fetchCandidates = data =>
+  axios.post("/fetchCandidates", data).then(response => response.data);
+
 export {
   loginRequest,
   addPollRequest,
   fetchPolls,
   fetchPollData,
   verifyVoter,
-  createOtpRequest
+  createOtpRequest,
+  fetchCandidates
 };
