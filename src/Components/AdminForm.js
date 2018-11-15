@@ -55,6 +55,7 @@ class AdminForm extends Component {
   };
 
   onClose = () => this.setState({ open: false });
+
   handleSubmit = event => {
     event.preventDefault();
     loginRequest(this.state.email, this.state.password).then(res => {

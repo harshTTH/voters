@@ -11,15 +11,18 @@ import {
   InputLabel,
   MenuItem,
   Input,
-  CircularProgress
+  CircularProgress,
+  LinearProgress
 } from "@material-ui/core";
 import {
   fetchPolls,
   fetchPollData,
   verifyVoter,
-  createOtpRequest
+  createOtpRequest,
+  verifyOTP
 } from "../requests";
 import { logout } from "../utils";
+import { Redirect } from "react-router";
 
 const styles = theme => ({
   card: {
@@ -58,7 +61,12 @@ class SelectPoll extends React.Component {
     this.state = {
       list: [],
       poll: "",
-      mobile: ""
+      mobile: "",
+      otp: false,
+      otpVal: "",
+      process: false,
+      error: false,
+      next: false
     };
   }
 
@@ -72,91 +80,145 @@ class SelectPoll extends React.Component {
   };
 
   handleSubmit = event => {
-    event.prevetDefault();
+    event.preventDefault();
+    this.setState({ process: true });
     verifyVoter({
-      poll: this.state.poll,
-      mobile: this.state.mobile
+      poll_id: this.state.poll,
+      number: this.state.mobile
     }).then(res => {
-      if (res)
-        createOtpRequest({ mobile: this.state.mobile }).then(res => {
-          if (res)
-            fetchPollData({
-              poll: this.state.poll,
-              mobile: this.state.mobile
-            }).then(res => {
-              /*Create Vote Page*/
-            });
+      if (res) {
+        createOtpRequest({ number: this.state.mobile }).then(res => {
+          this.setState({ process: false });
+          if (res) {
+            this.setState({ otp: true });
+          } else {
+            this.setState({ error: true });
+          }
         });
+      } else {
+        /*Invalid Voter*/
+      }
+    });
+  };
+
+  handleOTPSubmit = event => {
+    event.preventDefault();
+    verifyOTP(event.target.value).then(response => {
+      if (response) {
+        this.setState({ next: true });
+      } else {
+        this.setState({ error: true });
+      }
     });
   };
   render() {
     const { classes } = this.props;
     return (
-      <form onSubmit={this.handleSubmit}>
-        <Card className={classes.card}>
-          <CardContent>
-            <Typography
-              className={classes.title}
-              color="textSecondary"
-              gutterBottom
-            >
-              Select Poll
-            </Typography>
-            <FormControl className={classes.formControl}>
-              <InputLabel htmlFor="poll">Poll</InputLabel>
-              <div className={classes.wrapper}>
-                <Select
-                  name="poll"
-                  value={this.state.poll}
-                  onChange={this.handleChange}
-                  inputProps={{
-                    name: "poll",
-                    id: "poll"
-                  }}
-                  className={classes.select}
-                  variant="filled"
-                  required
-                  disabled={this.state.list.length === 0}
-                >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  {this.state.list &&
-                    this.state.list.map(poll => (
-                      <MenuItem value={poll.id_no}>{poll.title}</MenuItem>
-                    ))}
-                </Select>
-                {this.state.list.length === 0 && (
-                  <div style={{ display: "inline" }}>
-                    <CircularProgress
-                      className={classes.progress}
-                      color="secondary"
-                      size={20}
+      <div>
+        {this.state.error && <Redirect to="/" />}
+        {this.state.next && <Redirect to="/" />}
+        {this.state.process ? (
+          <Card className={classes.card}>
+            <CardContent>
+              <LinearProgress color="secondary" />
+            </CardContent>
+          </Card>
+        ) : (
+          <div>
+            {this.state.otp ? (
+              <form onSubmit={this.handleOTPSubmit}>
+                <Card className={classes.card}>
+                  <CardContent>
+                    <Input
+                      placeholder="OTP"
+                      name="otpVal"
+                      type="text"
+                      className={classes.input}
+                      inputProps={{
+                        "aria-label": "Description"
+                      }}
+                      onChange={this.handleChange}
+                      value={this.state.otpVal}
+                      required
                     />
-                    Loading Polls
-                  </div>
-                )}
-              </div>
-            </FormControl>
-            <br />
-            <Input
-              placeholder="Mobile Number"
-              name="mobile"
-              type="tel"
-              className={classes.input}
-              inputProps={{
-                "aria-label": "Description"
-              }}
-              onChange={this.handleChange}
-              value={this.state.mobile}
-              required
-            />
-          </CardContent>
-          <CardActions>
-            <Button type="submit">Next</Button>
-          </CardActions>
-        </Card>
-      </form>
+                  </CardContent>
+                  <CardActions>
+                    <Button type="submit">Next</Button>
+                  </CardActions>
+                </Card>
+              </form>
+            ) : (
+              <form onSubmit={this.handleSubmit}>
+                <Card className={classes.card}>
+                  <CardContent>
+                    <Typography
+                      className={classes.title}
+                      color="textSecondary"
+                      gutterBottom
+                    >
+                      Select Poll
+                    </Typography>
+                    <FormControl className={classes.formControl}>
+                      <InputLabel htmlFor="poll">Poll</InputLabel>
+                      <div className={classes.wrapper}>
+                        <Select
+                          name="poll"
+                          value={this.state.poll}
+                          onChange={this.handleChange}
+                          inputProps={{
+                            name: "poll",
+                            id: "poll"
+                          }}
+                          className={classes.select}
+                          variant="filled"
+                          required
+                          disabled={this.state.list.length === 0}
+                        >
+                          <MenuItem value="">
+                            <em>None</em>
+                          </MenuItem>
+                          {this.state.list &&
+                            this.state.list.map(poll => (
+                              <MenuItem value={poll.id_no}>
+                                {poll.title}
+                              </MenuItem>
+                            ))}
+                        </Select>
+                        {this.state.list.length === 0 && (
+                          <div style={{ display: "inline" }}>
+                            <CircularProgress
+                              className={classes.progress}
+                              color="secondary"
+                              size={20}
+                            />
+                            Loading Polls
+                          </div>
+                        )}
+                      </div>
+                    </FormControl>
+                    <br />
+                    <Input
+                      placeholder="Mobile Number"
+                      name="mobile"
+                      type="tel"
+                      className={classes.input}
+                      inputProps={{
+                        "aria-label": "Description"
+                      }}
+                      onChange={this.handleChange}
+                      value={this.state.mobile}
+                      required
+                    />
+                  </CardContent>
+                  <CardActions>
+                    <Button type="submit">Next</Button>
+                  </CardActions>
+                </Card>
+              </form>
+            )}
+          </div>
+        )}
+      </div>
     );
   }
 }
