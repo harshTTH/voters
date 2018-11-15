@@ -299,6 +299,7 @@ const createVotersData = data => {
   if (tempset.size !== voters.length) {
     return null;
   }
+  console.log(voters);
   return voters;
 };
 

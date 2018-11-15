@@ -14,6 +14,7 @@ import {
   CircularProgress,
   LinearProgress
 } from "@material-ui/core";
+import ErrorSnack from "./ErrorSnack";
 import {
   fetchPolls,
   fetchPollData,
@@ -66,6 +67,7 @@ class SelectPoll extends React.Component {
       otpVal: "",
       process: false,
       error: false,
+      message: "",
       next: false
     };
   }
@@ -78,6 +80,8 @@ class SelectPoll extends React.Component {
   handleChange = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
+
+  onClose = () => this.setState({ error: false });
 
   handleSubmit = event => {
     event.preventDefault();
@@ -92,31 +96,42 @@ class SelectPoll extends React.Component {
           if (res) {
             this.setState({ otp: true });
           } else {
-            this.setState({ error: true });
+            this.setState({ error: true, message: "Unable to Send OTP" });
           }
         });
       } else {
-        /*Invalid Voter*/
+        this.setState({ error: true, message: "Invalid Voter" });
       }
     });
   };
 
   handleOTPSubmit = event => {
     event.preventDefault();
-    verifyOTP(event.target.value).then(response => {
+    this.setState({ process: true });
+    verifyOTP({
+      number: this.state.mobile,
+      otp: this.state.otpVal
+    }).then(response => {
       if (response) {
         this.setState({ next: true });
       } else {
-        this.setState({ error: true });
+        this.setState({ error: true, message: "Wrong OTP" });
       }
     });
   };
+
   render() {
     const { classes } = this.props;
     return (
       <div>
-        {this.state.error && <Redirect to="/" />}
-        {this.state.next && <Redirect to="/" />}
+        {this.state.error && (
+          <ErrorSnack
+            open={this.state.error}
+            message={this.state.message}
+            onClose={this.onClose}
+          />
+        )}
+        {this.state.next && <Redirect to="/castVote" />}
         {this.state.process ? (
           <Card className={classes.card}>
             <CardContent>

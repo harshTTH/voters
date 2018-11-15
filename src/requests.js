@@ -47,5 +47,6 @@ export {
   fetchPolls,
   fetchPollData,
   verifyVoter,
-  createOtpRequest
+  createOtpRequest,
+  verifyOTP
 };

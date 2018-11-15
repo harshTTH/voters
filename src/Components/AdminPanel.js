@@ -81,12 +81,12 @@ class AdminPanel extends React.Component {
                     >
                       <CardContent>
                         <Typography variant="h5" component="h2">
-                          {poll.title[0]}
+                          {poll.title}
                         </Typography>
                         <Divider />
                         <Typography component="p">
                           Poll Date :-
-                          {poll.poll_date[0]}
+                          {poll.poll_date}
                           <br />
                           {disabled ? "(Poll Expired)" : ""}
                         </Typography>
