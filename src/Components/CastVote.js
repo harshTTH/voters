@@ -34,6 +34,9 @@ const styles = theme => ({
   gridRoot: {
     flexGrow: 1
   },
+  progress: {
+    margin: theme.spacing.unit * 2
+  },
   formControl: {
     margin: theme.spacing.unit * 10
   },
@@ -88,14 +91,15 @@ class CastVote extends Component {
 
   handleClose = event => {
     event.preventDefault();
-    console.log(event);
-
-    if (event.target.value === "disagree") {
+    let select = event.currentTarget.value;
+    if (select === "disagree") {
       this.setState({ finalSubmit: false, vote: "", submit: false });
       console.log("IN DISAGREE");
-    } else if (event.target.value === "agree") {
+    } else if (select === "agree") {
       this.setState({ finalSubmit: true });
       console.log("IN AGREE");
+
+      //TEMP CODE
       // fetchCandidates({
       //   vote: this.state.vote,
       //   pollTitle: this.state.pollTitle
@@ -109,8 +113,6 @@ class CastVote extends Component {
   };
 
   confirmVote = () => {
-    console.log("IN CONFRIM VOTE ...... " + this.state.submit);
-
     return (
       <Dialog
         open={this.state.open}
@@ -130,6 +132,7 @@ class CastVote extends Component {
             onClick={this.handleClose}
             value="disagree"
             color="secondary"
+            type="submit"
             autoFocus
           >
             Disagree
@@ -138,6 +141,7 @@ class CastVote extends Component {
             onClick={this.handleClose}
             value="agree"
             color="primary"
+            type="submit"
             autoFocus
           >
             Agree
@@ -149,11 +153,18 @@ class CastVote extends Component {
 
   render() {
     let { classes } = this.props;
-    console.log(this.state.submit);
-
+    console.log("SUBMIT VALUE .. " + this.state.submit);
     return (
       <div>
-        {this.state.finalSubmit ? (
+        {this.state.candidates.length < 0 ? (
+          <div>
+            <CircularProgress
+              className={classes.progress}
+              color="secondary"
+              size={60}
+            />
+          </div>
+        ) : this.state.finalSubmit ? (
           <Redirect to="/voter" />
         ) : this.state.submit ? (
           this.confirmVote()
